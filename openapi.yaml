@@ -1,0 +1,3464 @@
+openapi: 3.0.3
+info:
+  title: 'ExposicionesLaravel API Documentation'
+  description: ''
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost:8000'
+tags:
+  -
+    name: 'Gestión de Alumnos'
+    description: "\nEndpoints para administrar alumnos de la institución."
+  -
+    name: 'Gestión de Autenticación'
+    description: "\nEndpoints para administrar el acceso al sistema."
+  -
+    name: 'Gestión de Equipos'
+    description: "\nEndpoints para administrar los equipos de trabajo, sus integrantes y su relación con las materias."
+  -
+    name: 'Gestión de Evaluaciones'
+    description: "\nEndpoints para registrar y consultar las evaluaciones realizadas por los usuarios a las exposiciones."
+  -
+    name: 'Gestión de Exposiciones'
+    description: "\nEndpoints para programar, actualizar y consultar las exposiciones de los equipos."
+  -
+    name: 'Gestión de Grupos'
+    description: "\nEndpoints para administrar Grupos de una materia y la inscripción de alumnos."
+  -
+    name: 'Gestión de Maestros'
+    description: "\nEndpoints para la administración de docentes, incluyendo la creación de su cuenta de usuario vinculada."
+  -
+    name: 'Gestión de Materias'
+    description: "\nEndpoints para la gestión del catálogo de materias de la institución."
+  -
+    name: 'Gestión de Rúbricas'
+    description: "\nEndpoints para definir las rúbricas de evaluación y sus criterios (porcentajes) correspondientes."
+paths:
+  /api/alumnos:
+    get:
+      summary: 'Listar todos los alumnos.'
+      operationId: listarTodosLosAlumnos
+      description: '* Obtiene una lista de todos los alumnos registrados junto con su información de usuario.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    -
+                      id_usuario: 1
+                      num_ctrl: '19030001'
+                      usuario:
+                        id_usuario: 1
+                        nombre: 'Juan Pérez'
+                        email: juan@example.com
+                        id_rol: 2
+                  message: 'Lista de alumnos recuperada.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example:
+                      -
+                        id_usuario: 1
+                        num_ctrl: '19030001'
+                        usuario:
+                          id_usuario: 1
+                          nombre: 'Juan Pérez'
+                          email: juan@example.com
+                          id_rol: 2
+                    items:
+                      type: object
+                      properties:
+                        id_usuario:
+                          type: integer
+                          example: 1
+                        num_ctrl:
+                          type: string
+                          example: '19030001'
+                        usuario:
+                          type: object
+                          properties:
+                            id_usuario:
+                              type: integer
+                              example: 1
+                            nombre:
+                              type: string
+                              example: 'Juan Pérez'
+                            email:
+                              type: string
+                              example: juan@example.com
+                            id_rol:
+                              type: integer
+                              example: 2
+                  message:
+                    type: string
+                    example: 'Lista de alumnos recuperada.'
+      tags:
+        - 'Gestión de Alumnos'
+      security: []
+    post:
+      summary: 'Crear un nuevo alumno.'
+      operationId: crearUnNuevoAlumno
+      description: '* Registra un usuario y su perfil de alumno correspondiente utilizando una transacción.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_usuario: 1
+                    num_ctrl: '19030001'
+                    usuario:
+                      id_usuario: 1
+                      nombre: 'Juan Pérez'
+                      email: juan@example.com
+                      id_rol: 2
+                  message: 'Alumno creado con éxito.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_usuario:
+                        type: integer
+                        example: 1
+                      num_ctrl:
+                        type: string
+                        example: '19030001'
+                      usuario:
+                        type: object
+                        properties:
+                          id_usuario:
+                            type: integer
+                            example: 1
+                          nombre:
+                            type: string
+                            example: 'Juan Pérez'
+                          email:
+                            type: string
+                            example: juan@example.com
+                          id_rol:
+                            type: integer
+                            example: 2
+                  message:
+                    type: string
+                    example: 'Alumno creado con éxito.'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The given data was invalid.'
+                  errors:
+                    email:
+                      - 'El correo electrónico ya ha sido registrado.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        example:
+                          - 'El correo electrónico ya ha sido registrado.'
+                        items:
+                          type: string
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Error al procesar el registro'
+                  data:
+                    - 'Algo dentro del servidor falló...'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Error al procesar el registro'
+                  data:
+                    type: array
+                    example:
+                      - 'Algo dentro del servidor falló...'
+                    items:
+                      type: string
+      tags:
+        - 'Gestión de Alumnos'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  description: 'El nombre completo del alumno.'
+                  example: 'Juan Pérez'
+                email:
+                  type: string
+                  description: 'El correo electrónico institucional.'
+                  example: juan@example.com
+                password:
+                  type: string
+                  description: 'La contraseña del alumno (mínimo 8 caracteres).'
+                  example: password123
+                num_ctrl:
+                  type: string
+                  description: 'El número de control único del alumno.'
+                  example: '19030001'
+                id_rol:
+                  type: integer
+                  description: 'El ID del rol que se le asignará.'
+                  example: 2
+              required:
+                - nombre
+                - email
+                - password
+                - num_ctrl
+                - id_rol
+      security: []
+  '/api/alumnos/{id}':
+    get:
+      summary: 'Mostrar un alumno específico.'
+      operationId: mostrarUnAlumnoEspecfico
+      description: '* Retorna la información detallada de un alumno por su ID de usuario, incluyendo sus grupos y equipos.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_usuario: 1
+                    num_ctrl: '19030001'
+                    usuario:
+                      nombre: 'Juan Pérez'
+                      email: juan@example.com
+                    grupos: []
+                    equipos: []
+                  message: 'Datos del alumno obtenidos.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_usuario:
+                        type: integer
+                        example: 1
+                      num_ctrl:
+                        type: string
+                        example: '19030001'
+                      usuario:
+                        type: object
+                        properties:
+                          nombre:
+                            type: string
+                            example: 'Juan Pérez'
+                          email:
+                            type: string
+                            example: juan@example.com
+                      grupos:
+                        type: array
+                        example: []
+                      equipos:
+                        type: array
+                        example: []
+                  message:
+                    type: string
+                    example: 'Datos del alumno obtenidos.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Alumno no encontrado.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Alumno no encontrado.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Alumnos'
+      security: []
+    put:
+      summary: 'Actualizar datos del alumno.'
+      operationId: actualizarDatosDelAlumno
+      description: '* Actualiza la información básica del usuario y el número de control del alumno.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_usuario: 1
+                    num_ctrl: '19030002'
+                    usuario:
+                      id_usuario: 1
+                      nombre: 'Juan Modificado'
+                      email: juan_mod@example.com
+                  message: 'Alumno actualizado.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_usuario:
+                        type: integer
+                        example: 1
+                      num_ctrl:
+                        type: string
+                        example: '19030002'
+                      usuario:
+                        type: object
+                        properties:
+                          id_usuario:
+                            type: integer
+                            example: 1
+                          nombre:
+                            type: string
+                            example: 'Juan Modificado'
+                          email:
+                            type: string
+                            example: juan_mod@example.com
+                  message:
+                    type: string
+                    example: 'Alumno actualizado.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Alumno no encontrado.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Alumno no encontrado.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Alumnos'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  description: 'El nuevo nombre del alumno.'
+                  example: 'Juan Modificado'
+                email:
+                  type: string
+                  description: 'El nuevo correo del alumno.'
+                  example: juan_mod@example.com
+                num_ctrl:
+                  type: string
+                  description: 'El nuevo número de control.'
+                  example: '19030002'
+      security: []
+    delete:
+      summary: 'Eliminar un alumno.'
+      operationId: eliminarUnAlumno
+      description: '* Elimina lógicamente (o físicamente) al usuario, y en cascada se eliminará su registro de alumno.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Alumno eliminado correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Alumno eliminado correctamente.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Usuario no existe.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Usuario no existe.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Alumnos'
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'El ID del usuario asociado al alumno.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/login:
+    post:
+      summary: 'Inicio de sesión.'
+      operationId: inicioDeSesin
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    token: 1|ra67sdf...
+                    user:
+                      id_usuario: 1
+                      nombre: Admin
+                      email: admin@example.com
+                      id_rol: 1
+                      created_at: '2026-03-06T18:01:01.000000Z'
+                      updated_at: '2026-03-06T18:01:01.000000Z'
+                      rol:
+                        id_rol: 1
+                        nombre_rol: Maestro
+                        created_at: '2026-03-06T18:01:00.000000Z'
+                        updated_at: '2026-03-06T18:01:00.000000Z'
+                  message: 'Usuario autenticado con éxito.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: 1|ra67sdf...
+                      user:
+                        type: object
+                        properties:
+                          id_usuario:
+                            type: integer
+                            example: 1
+                          nombre:
+                            type: string
+                            example: Admin
+                          email:
+                            type: string
+                            example: admin@example.com
+                          id_rol:
+                            type: integer
+                            example: 1
+                          created_at:
+                            type: string
+                            example: '2026-03-06T18:01:01.000000Z'
+                          updated_at:
+                            type: string
+                            example: '2026-03-06T18:01:01.000000Z'
+                          rol:
+                            type: object
+                            properties:
+                              id_rol:
+                                type: integer
+                                example: 1
+                              nombre_rol:
+                                type: string
+                                example: Maestro
+                              created_at:
+                                type: string
+                                example: '2026-03-06T18:01:00.000000Z'
+                              updated_at:
+                                type: string
+                                example: '2026-03-06T18:01:00.000000Z'
+                  message:
+                    type: string
+                    example: 'Usuario autenticado con éxito.'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Credenciales incorrectas.'
+                  data:
+                    error: 'No autorizado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Credenciales incorrectas.'
+                  data:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                        example: 'No autorizado'
+      tags:
+        - 'Gestión de Autenticación'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'El correo del usuario.'
+                  example: admin@example.com
+                password:
+                  type: string
+                  description: 'La contraseña.'
+                  example: password
+              required:
+                - email
+                - password
+      security: []
+  /api/me:
+    get:
+      summary: 'Obtener perfil del usuario logueado.'
+      operationId: obtenerPerfilDelUsuarioLogueado
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_usuario: 1
+                    nombre: 'Profe Troncoso'
+                    email: maestro@test.com
+                    id_rol: 1
+                    created_at: '2026-03-06T18:01:01.000000Z'
+                    updated_at: '2026-03-06T18:01:01.000000Z'
+                    rol:
+                      id_rol: 1
+                      nombre_rol: Maestro
+                      created_at: '2026-03-06T18:01:00.000000Z'
+                      updated_at: '2026-03-06T18:01:00.000000Z'
+                    alumno: null
+                    maestro:
+                      id_usuario: 1
+                      created_at: '2026-03-06T18:01:01.000000Z'
+                      updated_at: '2026-03-06T18:01:01.000000Z'
+                      grupos: []
+                  message: 'Datos del usuario logueado.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_usuario:
+                        type: integer
+                        example: 1
+                      nombre:
+                        type: string
+                        example: 'Profe Troncoso'
+                      email:
+                        type: string
+                        example: maestro@test.com
+                      id_rol:
+                        type: integer
+                        example: 1
+                      created_at:
+                        type: string
+                        example: '2026-03-06T18:01:01.000000Z'
+                      updated_at:
+                        type: string
+                        example: '2026-03-06T18:01:01.000000Z'
+                      rol:
+                        type: object
+                        properties:
+                          id_rol:
+                            type: integer
+                            example: 1
+                          nombre_rol:
+                            type: string
+                            example: Maestro
+                          created_at:
+                            type: string
+                            example: '2026-03-06T18:01:00.000000Z'
+                          updated_at:
+                            type: string
+                            example: '2026-03-06T18:01:00.000000Z'
+                      alumno:
+                        type: string
+                        example: null
+                        nullable: true
+                      maestro:
+                        type: object
+                        properties:
+                          id_usuario:
+                            type: integer
+                            example: 1
+                          created_at:
+                            type: string
+                            example: '2026-03-06T18:01:01.000000Z'
+                          updated_at:
+                            type: string
+                            example: '2026-03-06T18:01:01.000000Z'
+                          grupos:
+                            type: array
+                            example: []
+                  message:
+                    type: string
+                    example: 'Datos del usuario logueado.'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'Gestión de Autenticación'
+  /api/logout:
+    post:
+      summary: 'Cerrar sesión.'
+      operationId: cerrarSesin
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Sesión cerrada y token eliminado.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Sesión cerrada y token eliminado.'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'Gestión de Autenticación'
+  /api/register:
+    post:
+      summary: 'Registro de usuario.'
+      operationId: registroDeUsuario
+      description: ''
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    token: 4|Y7CHpCxOr...
+                    user:
+                      nombre: maestro
+                      email: maestro@mail.com
+                      id_rol: 2
+                      updated_at: '2026-03-08T05:50:38.000000Z'
+                      created_at: '2026-03-08T05:50:38.000000Z'
+                      id_usuario: 3
+                      rol:
+                        id_rol: 2
+                        nombre_rol: Alumno
+                        created_at: '2026-03-06T18:01:00.000000Z'
+                        updated_at: '2026-03-06T18:01:00.000000Z'
+                  message: 'Usuario registrado correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: 4|Y7CHpCxOr...
+                      user:
+                        type: object
+                        properties:
+                          nombre:
+                            type: string
+                            example: maestro
+                          email:
+                            type: string
+                            example: maestro@mail.com
+                          id_rol:
+                            type: integer
+                            example: 2
+                          updated_at:
+                            type: string
+                            example: '2026-03-08T05:50:38.000000Z'
+                          created_at:
+                            type: string
+                            example: '2026-03-08T05:50:38.000000Z'
+                          id_usuario:
+                            type: integer
+                            example: 3
+                          rol:
+                            type: object
+                            properties:
+                              id_rol:
+                                type: integer
+                                example: 2
+                              nombre_rol:
+                                type: string
+                                example: Alumno
+                              created_at:
+                                type: string
+                                example: '2026-03-06T18:01:00.000000Z'
+                              updated_at:
+                                type: string
+                                example: '2026-03-06T18:01:00.000000Z'
+                  message:
+                    type: string
+                    example: 'Usuario registrado correctamente.'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The password field confirmation does not match. (and 1 more error)'
+                  errors:
+                    password:
+                      - 'The password field confirmation does not match.'
+                    id_rol:
+                      - 'The id rol field is required.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The password field confirmation does not match. (and 1 more error)'
+                  errors:
+                    type: object
+                    properties:
+                      password:
+                        type: array
+                        example:
+                          - 'The password field confirmation does not match.'
+                        items:
+                          type: string
+                      id_rol:
+                        type: array
+                        example:
+                          - 'The id rol field is required.'
+                        items:
+                          type: string
+      tags:
+        - 'Gestión de Autenticación'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  description: 'Nombre completo.'
+                  example: 'Nuevo Usuario'
+                email:
+                  type: string
+                  description: 'Correo único.'
+                  example: nuevo@example.com
+                password:
+                  type: string
+                  description: 'Mínimo 8 caracteres.'
+                  example: password123
+                id_rol:
+                  type: integer
+                  description: 'ID del rol.'
+                  example: 2
+              required:
+                - nombre
+                - email
+                - password
+                - id_rol
+      security: []
+  /api/equipos:
+    get:
+      summary: 'Listar equipos.'
+      operationId: listarEquipos
+      description: '* Obtiene una lista de todos los equipos con su materia e integrantes.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n\"success\": true,\n\"data\": [\n{\n\"id_equipo\": 1,\n\"id_grupo\": 2,\n\"equipo\": \"Los Dinamita\",\n\"active\": 1,\n\"created_at\": \"2026-03-08T10:00:00.000000Z\",\n\"updated_at\": \"2026-03-08T10:00:00.000000Z\",\n\"grupo\": {\n\"id_grupo\": 2,\n\"id_materia\": 5,\n\"materia\": {\n\"id_materia\": 5,\n\"nombre_materia\": \"Programación Web\"\n}\n},\n\"integrantes\": [\n{\n\"id_usuario\": 10,\n\"nombre\": \"Juan Pérez\",\n\"email\": \"juan@example.com\",\n\"usuario\": {\n\"id_usuario\": 10,\n\"nombre\": \"Juan Pérez\"\n}\n}\n]\n}\n],\n\"message\": \"Equipos recuperados exitosamente.\""
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - 'Gestión de Equipos'
+    post:
+      summary: 'Crear un equipo.'
+      operationId: crearUnEquipo
+      description: '* Crea un nuevo equipo y asigna los alumnos integrantes mediante una transacción.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_equipo: 5
+                    id_grupo: 1
+                    equipo: 'Los Dinamita'
+                    active: true
+                    created_at: '2026-03-08T12:00:00.000000Z'
+                    updated_at: '2026-03-08T12:00:00.000000Z'
+                    integrantes:
+                      -
+                        id_usuario: 10
+                        nombre: 'Juan Pérez'
+                      -
+                        id_usuario: 11
+                        nombre: 'Maria Lopez'
+                  message: 'Equipo creado e integrantes asignados.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_equipo:
+                        type: integer
+                        example: 5
+                      id_grupo:
+                        type: integer
+                        example: 1
+                      equipo:
+                        type: string
+                        example: 'Los Dinamita'
+                      active:
+                        type: boolean
+                        example: true
+                      created_at:
+                        type: string
+                        example: '2026-03-08T12:00:00.000000Z'
+                      updated_at:
+                        type: string
+                        example: '2026-03-08T12:00:00.000000Z'
+                      integrantes:
+                        type: array
+                        example:
+                          -
+                            id_usuario: 10
+                            nombre: 'Juan Pérez'
+                          -
+                            id_usuario: 11
+                            nombre: 'Maria Lopez'
+                        items:
+                          type: object
+                          properties:
+                            id_usuario:
+                              type: integer
+                              example: 10
+                            nombre:
+                              type: string
+                              example: 'Juan Pérez'
+                  message:
+                    type: string
+                    example: 'Equipo creado e integrantes asignados.'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The alumnos field is required.'
+                  errors:
+                    alumnos:
+                      - 'The alumnos field is required.'
+                    id_grupo:
+                      - 'The selected id grupo is invalid.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The alumnos field is required.'
+                  errors:
+                    type: object
+                    properties:
+                      alumnos:
+                        type: array
+                        example:
+                          - 'The alumnos field is required.'
+                        items:
+                          type: string
+                      id_grupo:
+                        type: array
+                        example:
+                          - 'The selected id grupo is invalid.'
+                        items:
+                          type: string
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Error al crear el equipo.'
+                  data:
+                    - 'SQLSTATE[23000]: Integrity constraint violation...'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Error al crear el equipo.'
+                  data:
+                    type: array
+                    example:
+                      - 'SQLSTATE[23000]: Integrity constraint violation...'
+                    items:
+                      type: string
+      tags:
+        - 'Gestión de Equipos'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_grupo:
+                  type: integer
+                  description: 'ID del grupo al que pertenece.'
+                  example: 1
+                equipo:
+                  type: string
+                  description: 'Nombre identificador del equipo.'
+                  example: 'Los Dinamita'
+                alumnos:
+                  type: array
+                  description: 'Array de IDs de usuarios (alumnos).'
+                  example:
+                    - 10
+                    - 11
+                    - 12
+                  items:
+                    type: integer
+              required:
+                - id_grupo
+                - equipo
+                - alumnos
+  '/api/equipos/{id}':
+    get:
+      summary: 'Ver un equipo específico.'
+      operationId: verUnEquipoEspecfico
+      description: '* Muestra la información detallada de un equipo, incluyendo sus integrantes y exposiciones programadas.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_equipo: 1
+                    equipo: 'Los Dinamita'
+                    grupo:
+                      id_grupo: 1
+                      materia:
+                        nombre_materia: 'Base de Datos'
+                    integrantes:
+                      -
+                        id_usuario: 10
+                        nombre: 'Juan Pérez'
+                      -
+                        id_usuario: 11
+                        nombre: 'Maria Lopez'
+                    exposiciones:
+                      -
+                        id_exposicion: 1
+                        fecha: '2026-04-10'
+                        tema: Normalización
+                  message: 'Detalles del equipo recuperados.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_equipo:
+                        type: integer
+                        example: 1
+                      equipo:
+                        type: string
+                        example: 'Los Dinamita'
+                      grupo:
+                        type: object
+                        properties:
+                          id_grupo:
+                            type: integer
+                            example: 1
+                          materia:
+                            type: object
+                            properties:
+                              nombre_materia:
+                                type: string
+                                example: 'Base de Datos'
+                      integrantes:
+                        type: array
+                        example:
+                          -
+                            id_usuario: 10
+                            nombre: 'Juan Pérez'
+                          -
+                            id_usuario: 11
+                            nombre: 'Maria Lopez'
+                        items:
+                          type: object
+                          properties:
+                            id_usuario:
+                              type: integer
+                              example: 10
+                            nombre:
+                              type: string
+                              example: 'Juan Pérez'
+                      exposiciones:
+                        type: array
+                        example:
+                          -
+                            id_exposicion: 1
+                            fecha: '2026-04-10'
+                            tema: Normalización
+                        items:
+                          type: object
+                          properties:
+                            id_exposicion:
+                              type: integer
+                              example: 1
+                            fecha:
+                              type: string
+                              example: '2026-04-10'
+                            tema:
+                              type: string
+                              example: Normalización
+                  message:
+                    type: string
+                    example: 'Detalles del equipo recuperados.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Equipo no encontrado.'
+                  data:
+                    error: 'El ID proporcionado no existe en la base de datos.'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Equipo no encontrado.'
+                  data:
+                    type: object
+                    properties:
+                      error:
+                        type: string
+                        example: 'El ID proporcionado no existe en la base de datos.'
+      tags:
+        - 'Gestión de Equipos'
+    delete:
+      summary: 'Eliminar equipo.'
+      operationId: eliminarEquipo
+      description: '* Elimina permanentemente el equipo del sistema.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Equipo eliminado correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Equipo eliminado correctamente.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Equipo no encontrado.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Equipo no encontrado.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Equipos'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID del equipo.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/equipos/{id}/integrantes':
+    put:
+      summary: 'Actualizar integrantes.'
+      operationId: actualizarIntegrantes
+      description: '* Reemplaza la lista actual de integrantes del equipo por una nueva lista de IDs de alumnos.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_equipo: 1
+                    equipo: 'Los Dinamita'
+                    integrantes:
+                      -
+                        id_usuario: 14
+                        nombre: 'Kevin Flynn'
+                      -
+                        id_usuario: 15
+                        nombre: 'Alan Bradley'
+                  message: 'Integrantes actualizados exitosamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_equipo:
+                        type: integer
+                        example: 1
+                      equipo:
+                        type: string
+                        example: 'Los Dinamita'
+                      integrantes:
+                        type: array
+                        example:
+                          -
+                            id_usuario: 14
+                            nombre: 'Kevin Flynn'
+                          -
+                            id_usuario: 15
+                            nombre: 'Alan Bradley'
+                        items:
+                          type: object
+                          properties:
+                            id_usuario:
+                              type: integer
+                              example: 14
+                            nombre:
+                              type: string
+                              example: 'Kevin Flynn'
+                  message:
+                    type: string
+                    example: 'Integrantes actualizados exitosamente.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Equipo no encontrado.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Equipo no encontrado.'
+                  data:
+                    type: array
+                    example: []
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The alumnos.0 field is invalid.'
+                  errors:
+                    alumnos.0:
+                      - 'The selected alumnos.0 is invalid.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The alumnos.0 field is invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      alumnos.0:
+                        type: array
+                        example:
+                          - 'The selected alumnos.0 is invalid.'
+                        items:
+                          type: string
+      tags:
+        - 'Gestión de Equipos'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                alumnos:
+                  type: array
+                  description: 'Nuevos IDs de alumnos integrantes.'
+                  example:
+                    - 14
+                    - 15
+                  items:
+                    type: integer
+              required:
+                - alumnos
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID del equipo a actualizar.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/evaluaciones:
+    get:
+      summary: 'Listar evaluaciones.'
+      operationId: listarEvaluaciones
+      description: '* Recupera el historial completo de evaluaciones con sus detalles técnicos.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    -
+                      id_evaluacion: 1
+                      id_expo: 5
+                      id_usuario: 2
+                      observaciones: 'Excelente dominio del tema.'
+                      fecha: '2026-03-08 10:00:00'
+                      exposicion:
+                        id_expo: 5
+                        tema: 'Arquitectura de Microservicios'
+                      usuario:
+                        id_usuario: 2
+                        nombre: 'Dr. Arjona'
+                      detalles:
+                        -
+                          id_detalle: 1
+                          calificacion: 9.5
+                          criterio:
+                            id_criterios: 1
+                            nombre_criterio: Puntualidad
+                  message: 'Evaluaciones recuperadas.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example:
+                      -
+                        id_evaluacion: 1
+                        id_expo: 5
+                        id_usuario: 2
+                        observaciones: 'Excelente dominio del tema.'
+                        fecha: '2026-03-08 10:00:00'
+                        exposicion:
+                          id_expo: 5
+                          tema: 'Arquitectura de Microservicios'
+                        usuario:
+                          id_usuario: 2
+                          nombre: 'Dr. Arjona'
+                        detalles:
+                          -
+                            id_detalle: 1
+                            calificacion: 9.5
+                            criterio:
+                              id_criterios: 1
+                              nombre_criterio: Puntualidad
+                    items:
+                      type: object
+                      properties:
+                        id_evaluacion:
+                          type: integer
+                          example: 1
+                        id_expo:
+                          type: integer
+                          example: 5
+                        id_usuario:
+                          type: integer
+                          example: 2
+                        observaciones:
+                          type: string
+                          example: 'Excelente dominio del tema.'
+                        fecha:
+                          type: string
+                          example: '2026-03-08 10:00:00'
+                        exposicion:
+                          type: object
+                          properties:
+                            id_expo:
+                              type: integer
+                              example: 5
+                            tema:
+                              type: string
+                              example: 'Arquitectura de Microservicios'
+                        usuario:
+                          type: object
+                          properties:
+                            id_usuario:
+                              type: integer
+                              example: 2
+                            nombre:
+                              type: string
+                              example: 'Dr. Arjona'
+                        detalles:
+                          type: array
+                          example:
+                            -
+                              id_detalle: 1
+                              calificacion: 9.5
+                              criterio:
+                                id_criterios: 1
+                                nombre_criterio: Puntualidad
+                          items:
+                            type: object
+                            properties:
+                              id_detalle:
+                                type: integer
+                                example: 1
+                              calificacion:
+                                type: number
+                                example: 9.5
+                              criterio:
+                                type: object
+                                properties:
+                                  id_criterios:
+                                    type: integer
+                                    example: 1
+                                  nombre_criterio:
+                                    type: string
+                                    example: Puntualidad
+                  message:
+                    type: string
+                    example: 'Evaluaciones recuperadas.'
+      tags:
+        - 'Gestión de Evaluaciones'
+    post:
+      summary: 'Guardar evaluación.'
+      operationId: guardarEvaluacin
+      description: '* Registra una nueva evaluación y sus calificaciones individuales por criterio dentro de una transacción.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_evaluacion: 10
+                    id_expo: 1
+                    observaciones: 'Muy buena dicción.'
+                    detalles:
+                      -
+                        id_criterios: 1
+                        calificacion: 9.5
+                        criterio:
+                          nombre_criterio: Dominio
+                  message: 'Evaluación registrada correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_evaluacion:
+                        type: integer
+                        example: 10
+                      id_expo:
+                        type: integer
+                        example: 1
+                      observaciones:
+                        type: string
+                        example: 'Muy buena dicción.'
+                      detalles:
+                        type: array
+                        example:
+                          -
+                            id_criterios: 1
+                            calificacion: 9.5
+                            criterio:
+                              nombre_criterio: Dominio
+                        items:
+                          type: object
+                          properties:
+                            id_criterios:
+                              type: integer
+                              example: 1
+                            calificacion:
+                              type: number
+                              example: 9.5
+                            criterio:
+                              type: object
+                              properties:
+                                nombre_criterio:
+                                  type: string
+                                  example: Dominio
+                  message:
+                    type: string
+                    example: 'Evaluación registrada correctamente.'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The calificaciones.0.nota must be a number.'
+                  errors:
+                    calificaciones.0.nota:
+                      - 'The calificaciones.0.nota must be a number.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The calificaciones.0.nota must be a number.'
+                  errors:
+                    type: object
+                    properties:
+                      calificaciones.0.nota:
+                        type: array
+                        example:
+                          - 'The calificaciones.0.nota must be a number.'
+                        items:
+                          type: string
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Error al registrar evaluación.'
+                  data:
+                    - 'Error de integridad en la base de datos...'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Error al registrar evaluación.'
+                  data:
+                    type: array
+                    example:
+                      - 'Error de integridad en la base de datos...'
+                    items:
+                      type: string
+      tags:
+        - 'Gestión de Evaluaciones'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_expo:
+                  type: integer
+                  description: 'ID de la exposición a evaluar.'
+                  example: 1
+                id_usuario:
+                  type: integer
+                  description: 'ID del evaluador.'
+                  example: 1
+                observaciones:
+                  type: string
+                  description: 'Notas u observaciones adicionales.'
+                  example: 'Muy buena dicción.'
+                  nullable: true
+                calificaciones:
+                  type: array
+                  description: 'Array de calificaciones por criterio.'
+                  example:
+                    - []
+                  items:
+                    type: object
+                    properties:
+                      id_criterio:
+                        type: integer
+                        description: 'ID del criterio.'
+                        example: 1
+                      nota:
+                        type: number
+                        description: 'Nota numérica (0-10).'
+                        example: 9.5
+                    required:
+                      - id_criterio
+                      - nota
+              required:
+                - id_expo
+                - id_usuario
+                - calificaciones
+  '/api/evaluaciones/{id}':
+    get:
+      summary: 'Ver evaluación específica.'
+      operationId: verEvaluacinEspecfica
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_evaluacion: 1
+                    exposicion:
+                      tema: IA
+                      equipo:
+                        equipo: 'Los Linces'
+                    detalles:
+                      -
+                        id_criterios: 1
+                        calificacion: 9.5
+                        criterio:
+                          nombre_criterio: Dominio
+                  message: 'Detalle de evaluación obtenido.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_evaluacion:
+                        type: integer
+                        example: 1
+                      exposicion:
+                        type: object
+                        properties:
+                          tema:
+                            type: string
+                            example: IA
+                          equipo:
+                            type: object
+                            properties:
+                              equipo:
+                                type: string
+                                example: 'Los Linces'
+                      detalles:
+                        type: array
+                        example:
+                          -
+                            id_criterios: 1
+                            calificacion: 9.5
+                            criterio:
+                              nombre_criterio: Dominio
+                        items:
+                          type: object
+                          properties:
+                            id_criterios:
+                              type: integer
+                              example: 1
+                            calificacion:
+                              type: number
+                              example: 9.5
+                            criterio:
+                              type: object
+                              properties:
+                                nombre_criterio:
+                                  type: string
+                                  example: Dominio
+                  message:
+                    type: string
+                    example: 'Detalle de evaluación obtenido.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Evaluación no encontrada.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Evaluación no encontrada.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Evaluaciones'
+    delete:
+      summary: 'Eliminar evaluación.'
+      operationId: eliminarEvaluacin
+      description: '* Elimina una evaluación específica del sistema. Si la base de datos tiene configurado ON DELETE CASCADE, también se eliminarán sus detalles de calificación.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Evaluación eliminada correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Evaluación eliminada correctamente.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Evaluación no encontrada.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Evaluación no encontrada.'
+                  data:
+                    type: array
+                    example: []
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Error al eliminar la evaluación.'
+                  data:
+                    - 'Detalle del error SQL...'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Error al eliminar la evaluación.'
+                  data:
+                    type: array
+                    example:
+                      - 'Detalle del error SQL...'
+                    items:
+                      type: string
+      tags:
+        - 'Gestión de Evaluaciones'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID de la evaluación.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/exposiciones:
+    get:
+      summary: 'Listar exposiciones.'
+      operationId: listarExposiciones
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    -
+                      id_expo: 1
+                      tema: 'Seguridad en Redes'
+                      fecha: '2026-05-20 09:00:00'
+                      equipo:
+                        id_equipo: 3
+                        equipo: 'CyberSec Team'
+                        grupo:
+                          materia:
+                            nombre_materia: 'Seguridad Informática'
+                      rubrica:
+                        id_rubrica: 1
+                        nombre: 'Rúbrica General'
+                  message: 'Exposiciones recuperadas.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example:
+                      -
+                        id_expo: 1
+                        tema: 'Seguridad en Redes'
+                        fecha: '2026-05-20 09:00:00'
+                        equipo:
+                          id_equipo: 3
+                          equipo: 'CyberSec Team'
+                          grupo:
+                            materia:
+                              nombre_materia: 'Seguridad Informática'
+                        rubrica:
+                          id_rubrica: 1
+                          nombre: 'Rúbrica General'
+                    items:
+                      type: object
+                      properties:
+                        id_expo:
+                          type: integer
+                          example: 1
+                        tema:
+                          type: string
+                          example: 'Seguridad en Redes'
+                        fecha:
+                          type: string
+                          example: '2026-05-20 09:00:00'
+                        equipo:
+                          type: object
+                          properties:
+                            id_equipo:
+                              type: integer
+                              example: 3
+                            equipo:
+                              type: string
+                              example: 'CyberSec Team'
+                            grupo:
+                              type: object
+                              properties:
+                                materia:
+                                  type: object
+                                  properties:
+                                    nombre_materia:
+                                      type: string
+                                      example: 'Seguridad Informática'
+                        rubrica:
+                          type: object
+                          properties:
+                            id_rubrica:
+                              type: integer
+                              example: 1
+                            nombre:
+                              type: string
+                              example: 'Rúbrica General'
+                  message:
+                    type: string
+                    example: 'Exposiciones recuperadas.'
+      tags:
+        - 'Gestión de Exposiciones'
+    post:
+      summary: 'Programar exposición.'
+      operationId: programarExposicin
+      description: ''
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_expo: 12
+                    tema: 'Inteligencia Artificial'
+                    equipo:
+                      equipo: 'Los Dinamita'
+                    rubrica:
+                      nombre: 'Rúbrica Proyectos'
+                  message: 'Exposición programada correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_expo:
+                        type: integer
+                        example: 12
+                      tema:
+                        type: string
+                        example: 'Inteligencia Artificial'
+                      equipo:
+                        type: object
+                        properties:
+                          equipo:
+                            type: string
+                            example: 'Los Dinamita'
+                      rubrica:
+                        type: object
+                        properties:
+                          nombre:
+                            type: string
+                            example: 'Rúbrica Proyectos'
+                  message:
+                    type: string
+                    example: 'Exposición programada correctamente.'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The fecha field is required.'
+                  errors:
+                    fecha:
+                      - ...
+                properties:
+                  message:
+                    type: string
+                    example: 'The fecha field is required.'
+                  errors:
+                    type: object
+                    properties:
+                      fecha:
+                        type: array
+                        example:
+                          - ...
+                        items:
+                          type: string
+      tags:
+        - 'Gestión de Exposiciones'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_equipo:
+                  type: integer
+                  description: 'ID del equipo asignado.'
+                  example: 1
+                id_rubrica:
+                  type: integer
+                  description: 'ID de la rúbrica a aplicar.'
+                  example: 1
+                tema:
+                  type: string
+                  description: 'Título de la exposición.'
+                  example: 'Inteligencia Artificial'
+                fecha:
+                  type: string
+                  description: 'Formato Y-m-d H:i:s.'
+                  example: '2026-06-15 10:00:00'
+              required:
+                - id_equipo
+                - id_rubrica
+                - tema
+                - fecha
+  '/api/exposiciones/{id}':
+    get:
+      summary: 'Ver exposición.'
+      operationId: verExposicin
+      description: '* Obtiene información exhaustiva: integrantes del equipo, criterios de evaluación y evaluaciones recibidas.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n\"success\": true,\n\"data\": {\n\"id_expo\": 1,\n\"tema\": \"IA\",\n\"equipo\": { \"integrantes\": [...] },\n\"rubrica\": { \"criterios\": [...] },\n\"evaluaciones\": [ { \"usuario\": { \"nombre\": \"Juan\" }, \"observaciones\": \"...\" } ]\n},\n\"message\": \"Detalles de la exposición cargados.\"\n}"
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Exposición no encontrada.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Exposición no encontrada.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Exposiciones'
+    put:
+      summary: 'Actualizar exposición.'
+      operationId: actualizarExposicin
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_expo: 1
+                    tema: 'IA Generativa'
+                  message: 'Exposición actualizada.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_expo:
+                        type: integer
+                        example: 1
+                      tema:
+                        type: string
+                        example: 'IA Generativa'
+                  message:
+                    type: string
+                    example: 'Exposición actualizada.'
+      tags:
+        - 'Gestión de Exposiciones'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tema:
+                  type: string
+                  description: 'Nuevo tema.'
+                  example: 'IA Generativa'
+                fecha:
+                  type: string
+                  description: 'Nueva fecha.'
+                  example: '2026-07-01 11:00:00'
+    delete:
+      summary: 'Eliminar exposición.'
+      operationId: eliminarExposicin
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Exposición eliminada.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Exposición eliminada.'
+      tags:
+        - 'Gestión de Exposiciones'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID de la exposición.'
+        example: 17
+        required: true
+        schema:
+          type: integer
+  /api/grupos:
+    get:
+      summary: 'Listar todos los grupos.'
+      operationId: listarTodosLosGrupos
+      description: '* Obtiene una lista de todos los grupos junto con la información de su materia y el maestro asignado.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    -
+                      id_grupo: 1
+                      id_materia: 5
+                      id_maestro: 2
+                      grupo: A
+                      materia:
+                        id_materia: 5
+                        materia: 'Programación Web'
+                      maestro:
+                        id_usuario: 2
+                        usuario:
+                          nombre: 'Prof. García'
+                  message: 'Grupos recuperados con éxito.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example:
+                      -
+                        id_grupo: 1
+                        id_materia: 5
+                        id_maestro: 2
+                        grupo: A
+                        materia:
+                          id_materia: 5
+                          materia: 'Programación Web'
+                        maestro:
+                          id_usuario: 2
+                          usuario:
+                            nombre: 'Prof. García'
+                    items:
+                      type: object
+                      properties:
+                        id_grupo:
+                          type: integer
+                          example: 1
+                        id_materia:
+                          type: integer
+                          example: 5
+                        id_maestro:
+                          type: integer
+                          example: 2
+                        grupo:
+                          type: string
+                          example: A
+                        materia:
+                          type: object
+                          properties:
+                            id_materia:
+                              type: integer
+                              example: 5
+                            materia:
+                              type: string
+                              example: 'Programación Web'
+                        maestro:
+                          type: object
+                          properties:
+                            id_usuario:
+                              type: integer
+                              example: 2
+                            usuario:
+                              type: object
+                              properties:
+                                nombre:
+                                  type: string
+                                  example: 'Prof. García'
+                  message:
+                    type: string
+                    example: 'Grupos recuperados con éxito.'
+      tags:
+        - 'Gestión de Grupos'
+      security: []
+    post:
+      summary: 'Crear un nuevo grupo.'
+      operationId: crearUnNuevoGrupo
+      description: ''
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_grupo: 10
+                    id_materia: 1
+                    id_maestro: 2
+                    grupo: 601-A
+                    materia:
+                      id_materia: 1
+                      materia: Matemáticas
+                    maestro:
+                      id_usuario: 2
+                      usuario:
+                        nombre: 'Prof. García'
+                  message: 'Grupo creado correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_grupo:
+                        type: integer
+                        example: 10
+                      id_materia:
+                        type: integer
+                        example: 1
+                      id_maestro:
+                        type: integer
+                        example: 2
+                      grupo:
+                        type: string
+                        example: 601-A
+                      materia:
+                        type: object
+                        properties:
+                          id_materia:
+                            type: integer
+                            example: 1
+                          materia:
+                            type: string
+                            example: Matemáticas
+                      maestro:
+                        type: object
+                        properties:
+                          id_usuario:
+                            type: integer
+                            example: 2
+                          usuario:
+                            type: object
+                            properties:
+                              nombre:
+                                type: string
+                                example: 'Prof. García'
+                  message:
+                    type: string
+                    example: 'Grupo creado correctamente.'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The given data was invalid.'
+                  errors:
+                    id_materia:
+                      - 'The selected id materia is invalid.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      id_materia:
+                        type: array
+                        example:
+                          - 'The selected id materia is invalid.'
+                        items:
+                          type: string
+      tags:
+        - 'Gestión de Grupos'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_materia:
+                  type: integer
+                  description: 'El ID de la materia.'
+                  example: 1
+                id_maestro:
+                  type: integer
+                  description: 'El ID del usuario que es maestro.'
+                  example: 2
+                grupo:
+                  type: string
+                  description: 'El identificador del grupo (ej. A, B, 401). Max: 10 caracteres.'
+                  example: 601-A
+              required:
+                - id_materia
+                - id_maestro
+                - grupo
+      security: []
+  '/api/grupos/{id}':
+    get:
+      summary: 'Mostrar un grupo específico.'
+      operationId: mostrarUnGrupoEspecfico
+      description: '* Retorna los detalles de un grupo incluyendo la lista de alumnos inscritos.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_grupo: 1
+                    grupo: A
+                    alumnos:
+                      -
+                        id_usuario: 10
+                        usuario:
+                          nombre: 'Alumno Ejemplo'
+                  message: 'Detalles del grupo obtenidos.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_grupo:
+                        type: integer
+                        example: 1
+                      grupo:
+                        type: string
+                        example: A
+                      alumnos:
+                        type: array
+                        example:
+                          -
+                            id_usuario: 10
+                            usuario:
+                              nombre: 'Alumno Ejemplo'
+                        items:
+                          type: object
+                          properties:
+                            id_usuario:
+                              type: integer
+                              example: 10
+                            usuario:
+                              type: object
+                              properties:
+                                nombre:
+                                  type: string
+                                  example: 'Alumno Ejemplo'
+                  message:
+                    type: string
+                    example: 'Detalles del grupo obtenidos.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Grupo no encontrado.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Grupo no encontrado.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Grupos'
+      security: []
+    delete:
+      summary: 'Eliminar un grupo.'
+      operationId: eliminarUnGrupo
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Grupo eliminado exitosamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Grupo eliminado exitosamente.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Grupo no encontrado.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Grupo no encontrado.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Grupos'
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'El ID del grupo.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/grupos/{id}/inscribir':
+    post:
+      summary: 'Inscribir alumnos al grupo.'
+      operationId: inscribirAlumnosAlGrupo
+      description: '* Actualiza la lista de alumnos mediante el método sync (reemplaza la lista actual por la nueva).'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n\"success\": true,\n\"data\": {\n\"id_grupo\": 1,\n\"alumnos\": [ { \"id_usuario\": 10, \"usuario\": {...} } ]\n},\n\"message\": \"Lista de alumnos actualizada correctamente.\"\n}"
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Grupo no encontrado.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Grupo no encontrado.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Grupos'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                alumnos:
+                  type: array
+                  description: 'Array con los IDs (id_usuario) de los alumnos a inscribir.'
+                  example:
+                    - 10
+                    - 11
+                    - 12
+                  items:
+                    type: integer
+              required:
+                - alumnos
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'El ID del grupo.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/maestros:
+    get:
+      summary: 'Listar maestros.'
+      operationId: listarMaestros
+      description: '* Recupera la lista de maestros con su información básica de usuario.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    -
+                      id_usuario: 1
+                      created_at: '2026-03-08T00:00:00.000000Z'
+                      updated_at: '2026-03-08T00:00:00.000000Z'
+                      usuario:
+                        id_usuario: 1
+                        nombre: 'Prof. Gabriel'
+                        email: gabriel@docente.com
+                        id_rol: 1
+                  message: 'Lista de maestros recuperada.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example:
+                      -
+                        id_usuario: 1
+                        created_at: '2026-03-08T00:00:00.000000Z'
+                        updated_at: '2026-03-08T00:00:00.000000Z'
+                        usuario:
+                          id_usuario: 1
+                          nombre: 'Prof. Gabriel'
+                          email: gabriel@docente.com
+                          id_rol: 1
+                    items:
+                      type: object
+                      properties:
+                        id_usuario:
+                          type: integer
+                          example: 1
+                        created_at:
+                          type: string
+                          example: '2026-03-08T00:00:00.000000Z'
+                        updated_at:
+                          type: string
+                          example: '2026-03-08T00:00:00.000000Z'
+                        usuario:
+                          type: object
+                          properties:
+                            id_usuario:
+                              type: integer
+                              example: 1
+                            nombre:
+                              type: string
+                              example: 'Prof. Gabriel'
+                            email:
+                              type: string
+                              example: gabriel@docente.com
+                            id_rol:
+                              type: integer
+                              example: 1
+                  message:
+                    type: string
+                    example: 'Lista de maestros recuperada.'
+      tags:
+        - 'Gestión de Maestros'
+    post:
+      summary: 'Crear maestro.'
+      operationId: crearMaestro
+      description: '* Crea un usuario y lo vincula automáticamente como maestro en una sola transacción.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_usuario: 5
+                    usuario:
+                      id_usuario: 5
+                      nombre: 'Prof. Gabriel'
+                      email: gabriel@docente.com
+                  message: 'Maestro creado con éxito.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_usuario:
+                        type: integer
+                        example: 5
+                      usuario:
+                        type: object
+                        properties:
+                          id_usuario:
+                            type: integer
+                            example: 5
+                          nombre:
+                            type: string
+                            example: 'Prof. Gabriel'
+                          email:
+                            type: string
+                            example: gabriel@docente.com
+                  message:
+                    type: string
+                    example: 'Maestro creado con éxito.'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The email has already been taken.'
+                  errors:
+                    email:
+                      - 'The email has already been taken.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The email has already been taken.'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        example:
+                          - 'The email has already been taken.'
+                        items:
+                          type: string
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Error al registrar maestro.'
+                  data:
+                    - 'Detalle técnico del error...'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Error al registrar maestro.'
+                  data:
+                    type: array
+                    example:
+                      - 'Detalle técnico del error...'
+                    items:
+                      type: string
+      tags:
+        - 'Gestión de Maestros'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  description: 'Nombre completo del docente.'
+                  example: 'Prof. Gabriel'
+                email:
+                  type: string
+                  description: 'Correo institucional único.'
+                  example: gabriel@docente.com
+                password:
+                  type: string
+                  description: 'Contraseña (mín. 8 caracteres).'
+                  example: secret123
+                id_rol:
+                  type: integer
+                  description: 'ID del rol de maestro.'
+                  example: 1
+              required:
+                - nombre
+                - email
+                - password
+                - id_rol
+  '/api/maestros/{id}':
+    get:
+      summary: 'Ver maestro específico.'
+      operationId: verMaestroEspecfico
+      description: '* Obtiene el perfil del maestro junto con sus grupos y materias asignadas.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_usuario: 1
+                    usuario:
+                      nombre: 'Prof. Gabriel'
+                      email: gabriel@docente.com
+                    grupos:
+                      -
+                        id_grupo: 10
+                        materia:
+                          nombre_materia: Ciberseguridad
+                  message: 'Detalles del maestro recuperados.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_usuario:
+                        type: integer
+                        example: 1
+                      usuario:
+                        type: object
+                        properties:
+                          nombre:
+                            type: string
+                            example: 'Prof. Gabriel'
+                          email:
+                            type: string
+                            example: gabriel@docente.com
+                      grupos:
+                        type: array
+                        example:
+                          -
+                            id_grupo: 10
+                            materia:
+                              nombre_materia: Ciberseguridad
+                        items:
+                          type: object
+                          properties:
+                            id_grupo:
+                              type: integer
+                              example: 10
+                            materia:
+                              type: object
+                              properties:
+                                nombre_materia:
+                                  type: string
+                                  example: Ciberseguridad
+                  message:
+                    type: string
+                    example: 'Detalles del maestro recuperados.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Maestro no encontrado.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Maestro no encontrado.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Maestros'
+    put:
+      summary: 'Actualizar maestro.'
+      operationId: actualizarMaestro
+      description: '* Actualiza la información básica del usuario (nombre/email) vinculado al maestro.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n\"success\": true,\n\"data\": { \"id_usuario\": 1, \"nombre\": \"Gabriel actualizado\", \"maestro\": {...} },\n\"message\": \"Datos actualizados.\"\n}"
+      tags:
+        - 'Gestión de Maestros'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  description: 'Nuevo nombre.'
+                  example: 'Gabriel actualizado'
+                email:
+                  type: string
+                  description: 'Nuevo correo.'
+                  example: g.nuevo@docente.com
+    delete:
+      summary: 'Eliminar maestro.'
+      operationId: eliminarMaestro
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Maestro eliminado correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Maestro eliminado correctamente.'
+      tags:
+        - 'Gestión de Maestros'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID de usuario del maestro.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/materias:
+    get:
+      summary: 'Listar todas las materias.'
+      operationId: listarTodasLasMaterias
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    -
+                      id_materia: 1
+                      materia: 'Cálculo Diferencial'
+                    -
+                      id_materia: 2
+                      materia: Física
+                  message: 'Materias recuperadas con éxito.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example:
+                      -
+                        id_materia: 1
+                        materia: 'Cálculo Diferencial'
+                      -
+                        id_materia: 2
+                        materia: Física
+                    items:
+                      type: object
+                      properties:
+                        id_materia:
+                          type: integer
+                          example: 1
+                        materia:
+                          type: string
+                          example: 'Cálculo Diferencial'
+                  message:
+                    type: string
+                    example: 'Materias recuperadas con éxito.'
+      tags:
+        - 'Gestión de Materias'
+      security: []
+    post:
+      summary: 'Crear una nueva materia.'
+      operationId: crearUnaNuevaMateria
+      description: ''
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_materia: 15
+                    materia: 'Inteligencia Artificial'
+                  message: 'Materia creado correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_materia:
+                        type: integer
+                        example: 15
+                      materia:
+                        type: string
+                        example: 'Inteligencia Artificial'
+                  message:
+                    type: string
+                    example: 'Materia creado correctamente.'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The given data was invalid.'
+                  errors:
+                    materia:
+                      - 'The materia field is required.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      materia:
+                        type: array
+                        example:
+                          - 'The materia field is required.'
+                        items:
+                          type: string
+      tags:
+        - 'Gestión de Materias'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                materia:
+                  type: string
+                  description: 'Nombre de la materia.'
+                  example: 'Inteligencia Artificial'
+              required:
+                - materia
+      security: []
+  '/api/materias/{id}':
+    get:
+      summary: 'Mostrar una materia específica.'
+      operationId: mostrarUnaMateriaEspecfica
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_materia: 1
+                    materia: 'Cálculo Diferencial'
+                  message: 'Detalles de las materias obtenidos.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_materia:
+                        type: integer
+                        example: 1
+                      materia:
+                        type: string
+                        example: 'Cálculo Diferencial'
+                  message:
+                    type: string
+                    example: 'Detalles de las materias obtenidos.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Materia no encontrada.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Materia no encontrada.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Materias'
+      security: []
+    delete:
+      summary: 'Eliminar una materia.'
+      operationId: eliminarUnaMateria
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Materia eliminada exitosamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Materia eliminada exitosamente.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Materia no encontrada.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Materia no encontrada.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Materias'
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'El ID de la materia.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/rubricas:
+    get:
+      summary: 'Listar rúbricas.'
+      operationId: listarRbricas
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    -
+                      id_rubrica: 1
+                      rubrica: 'Rúbrica Final Proyectos'
+                      criterios:
+                        -
+                          id_criterios: 1
+                          descripcion: 'Dominio del tema'
+                          porcentaje: 40
+                  message: 'Rúbricas recuperadas.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example:
+                      -
+                        id_rubrica: 1
+                        rubrica: 'Rúbrica Final Proyectos'
+                        criterios:
+                          -
+                            id_criterios: 1
+                            descripcion: 'Dominio del tema'
+                            porcentaje: 40
+                    items:
+                      type: object
+                      properties:
+                        id_rubrica:
+                          type: integer
+                          example: 1
+                        rubrica:
+                          type: string
+                          example: 'Rúbrica Final Proyectos'
+                        criterios:
+                          type: array
+                          example:
+                            -
+                              id_criterios: 1
+                              descripcion: 'Dominio del tema'
+                              porcentaje: 40
+                          items:
+                            type: object
+                            properties:
+                              id_criterios:
+                                type: integer
+                                example: 1
+                              descripcion:
+                                type: string
+                                example: 'Dominio del tema'
+                              porcentaje:
+                                type: integer
+                                example: 40
+                  message:
+                    type: string
+                    example: 'Rúbricas recuperadas.'
+      tags:
+        - 'Gestión de Rúbricas'
+    post:
+      summary: 'Crear rúbrica con criterios.'
+      operationId: crearRbricaConCriterios
+      description: '* Crea una rúbrica y asocia múltiples criterios de evaluación de forma atómica.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data:
+                    id_rubrica: 3
+                    rubrica: 'Rubrica Final'
+                    criterios:
+                      -
+                        descripcion: 'Dominio del tema'
+                        porcentaje: 30
+                  message: 'Rúbrica y criterios creados con éxito.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id_rubrica:
+                        type: integer
+                        example: 3
+                      rubrica:
+                        type: string
+                        example: 'Rubrica Final'
+                      criterios:
+                        type: array
+                        example:
+                          -
+                            descripcion: 'Dominio del tema'
+                            porcentaje: 30
+                        items:
+                          type: object
+                          properties:
+                            descripcion:
+                              type: string
+                              example: 'Dominio del tema'
+                            porcentaje:
+                              type: integer
+                              example: 30
+                  message:
+                    type: string
+                    example: 'Rúbrica y criterios creados con éxito.'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The criterios.0.porcentaje must not be greater than 100.'
+                  errors:
+                    criterios.0.porcentaje:
+                      - ...
+                properties:
+                  message:
+                    type: string
+                    example: 'The criterios.0.porcentaje must not be greater than 100.'
+                  errors:
+                    type: object
+                    properties:
+                      criterios.0.porcentaje:
+                        type: array
+                        example:
+                          - ...
+                        items:
+                          type: string
+      tags:
+        - 'Gestión de Rúbricas'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rubrica:
+                  type: string
+                  description: 'Nombre descriptivo de la rúbrica.'
+                  example: 'Rubrica Final'
+                criterios:
+                  type: array
+                  description: 'Lista de criterios que componen la rúbrica.'
+                  example:
+                    - []
+                  items:
+                    type: object
+                    properties:
+                      descripcion:
+                        type: string
+                        description: 'Descripción del criterio.'
+                        example: 'Dominio del tema'
+                      porcentaje:
+                        type: number
+                        description: 'Valor porcentual (1-100).'
+                        example: 30.0
+                    required:
+                      - descripcion
+                      - porcentaje
+              required:
+                - rubrica
+                - criterios
+  '/api/rubricas/{id}':
+    get:
+      summary: 'Ver rúbrica.'
+      operationId: verRbrica
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n\"success\": true,\n\"data\": {\n\"id_rubrica\": 1,\n\"rubrica\": \"Rúbrica Final\",\n\"criterios\": [...]\n},\n\"message\": \"Detalles de la rúbrica obtenidos.\"\n}"
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Rúbrica no encontrada.'
+                  data: []
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Rúbrica no encontrada.'
+                  data:
+                    type: array
+                    example: []
+      tags:
+        - 'Gestión de Rúbricas'
+    delete:
+      summary: 'Eliminar rúbrica.'
+      operationId: eliminarRbrica
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  data: []
+                  message: 'Rúbrica eliminada correctamente.'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    example: []
+                  message:
+                    type: string
+                    example: 'Rúbrica eliminada correctamente.'
+      tags:
+        - 'Gestión de Rúbricas'
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'ID de la rúbrica.'
+        example: 1
+        required: true
+        schema:
+          type: integer
